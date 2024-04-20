@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateItemInput, UpdateItemInput } from './dto/inputs';
 import { Item } from './entities/item.entity';
@@ -27,12 +28,16 @@ export class ItemsService {
     }
   }
 
-  findAll() {
-    return [];
+  async findAll(): Promise<Item[]> {
+    return this.itemsRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} item`;
+  async findOne(id: string): Promise<Item> {
+    const item = await this.itemsRepository.findOneBy({ id });
+
+    if (!item) throw new NotFoundException(`Item con ${id} no encontrado.`);
+
+    return item;
   }
 
   update(id: number, updateItemInput: UpdateItemInput) {
