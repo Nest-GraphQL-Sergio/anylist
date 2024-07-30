@@ -5,6 +5,8 @@ import {
   Logger,
 } from '@nestjs/common';
 
+import * as bcrypt from 'bcrypt';
+
 import { User } from './entities/user.entity';
 
 import { CreateUserInput } from './dto/create-user.input';
@@ -25,7 +27,10 @@ export class UsersService {
 
   async create(signupInput: SignupInput): Promise<User> {
     try {
-      const newUser = this.usersRepositoty.create(signupInput);
+      const newUser = this.usersRepositoty.create({
+        ...signupInput,
+        password: bcrypt.hashSync(signupInput.password, 10),
+      });
       return await this.usersRepositoty.save(newUser);
     } catch (error) {
       this.handleDBErrors(error);
@@ -47,7 +52,7 @@ export class UsersService {
   private handleDBErrors(error: any): never {
     if (error.code === '23505')
       throw new BadRequestException(error.detail.replace('Key ', ''));
-    
+
     this.logger.error(error);
     throw new InternalServerErrorException('Please check server logs');
   }
