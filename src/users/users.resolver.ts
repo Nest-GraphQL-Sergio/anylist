@@ -35,6 +35,6 @@ export class UsersResolver {
     @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
     @CurrentUser([ValidRoles.admin]) user: User,
   ): Promise<User> {
-    return this.usersService.block(id);
+    return this.usersService.block(id, user);
   }
 }
