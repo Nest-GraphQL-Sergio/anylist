@@ -1,4 +1,4 @@
-import { NotImplementedException, UseGuards } from '@nestjs/common';
+import { ParseUUIDPipe, UseGuards } from '@nestjs/common';
 import { Resolver, Query, Mutation, Args, ID } from '@nestjs/graphql';
 
 import { UsersService } from './users.service';
@@ -17,15 +17,17 @@ export class UsersResolver {
   @Query(() => [User], { name: 'users' })
   findAll(
     @Args() validRoles: ValidRolesArgs,
-    @CurrentUser([ValidRoles.admin]) user: User,
+    @CurrentUser([ValidRoles.admin, ValidRoles.superUser]) user: User,
   ): Promise<User[]> {
     return this.usersService.findAll(validRoles.roles);
   }
 
   @Query(() => User, { name: 'user' })
-  findOne(@Args('id', { type: () => ID }) id: string): Promise<User> {
-    throw new NotImplementedException('UsersResolver.findOne NOT IMPLEMENTED');
-    //return this.usersService.findOneByEmail(id);
+  findOne(
+    @Args('id', { type: () => ID }, ParseUUIDPipe) id: string,
+    @CurrentUser([ValidRoles.admin, ValidRoles.superUser]) user: User,
+  ): Promise<User> {
+    return this.usersService.findOneById(id);
   }
 
   @Mutation(() => User)
