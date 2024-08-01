@@ -1,13 +1,18 @@
+import { JwtModule } from '@nestjs/jwt';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+
 import { PassportModule } from '@nestjs/passport';
 import { Module } from '@nestjs/common';
+import { JwtStrategy } from './strategies/jwt.strategy';
+
 import { AuthService } from './auth.service';
 import { AuthResolver } from './auth.resolver';
+
 import { UsersModule } from 'src/users/users.module';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  providers: [AuthResolver, AuthService],
+  providers: [AuthResolver, AuthService, JwtStrategy],
+  exports: [JwtStrategy, PassportModule, JwtModule],
   imports: [
     ConfigModule,
     PassportModule.register({
