@@ -15,8 +15,8 @@ import { UpdateUserInput } from './dto/update-user.input';
 import { ValidRoles } from '../auth/enums/valid-roles.enum';
 
 import { SignupInput } from '../auth/dto/inputs';
-import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UsersService {
@@ -70,6 +70,26 @@ export class UsersService {
     userToBlock.isActive = false;
     userToBlock.lastUpdateBy = adminUser;
     return await this.usersRepository.save(userToBlock);
+  }
+
+  async update(
+    id: string,
+    updateUserInput: UpdateUserInput,
+    adminUser: User,
+  ): Promise<User> {
+    try {
+      const user = await this.usersRepository.preload({
+        ...updateUserInput,
+        id,
+      });
+      if (!user) throw new NotFoundException(`User with ${id} not found.`);
+
+      user.lastUpdateBy = adminUser;
+
+      return await this.usersRepository.save(user);
+    } catch (error) {
+      this.handleDBErrors(error);
+    }
   }
 
   private handleDBErrors(error: any): never {
