@@ -34,11 +34,19 @@ export class ItemsService {
     const { limit, offset } = paginationArgs;
     const { search } = searchArgs;
 
-    // return this.itemsRepository.find({
-    //   take: limit,
-    //   skip: offset,
-    //   where: { user: { id: idUser }, name: Like(`%${search}%`) },
-    // });
+    const queryBuilder = this.itemsRepository
+      .createQueryBuilder()
+      .take(limit)
+      .skip(offset)
+      .where(`"userId" = :userId`, { userId: idUser });
+
+    if (search) {
+      queryBuilder.andWhere('LOWER(name) like :name', {
+        name: `%${search.toLocaleLowerCase()}%`,
+      });
+    }
+
+    return queryBuilder.getMany();
   }
 
   async findOne(id: string, user: User): Promise<Item> {
