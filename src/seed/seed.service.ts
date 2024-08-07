@@ -8,7 +8,7 @@ import { ItemsService } from '../items/items.service';
 
 import { Item } from '../items/entities/item.entity';
 import { User } from '../users/entities/user.entity';
-import { SEED_USERS } from './data/seed-data';
+import { SEED_ITEMS, SEED_USERS } from './data/seed-data';
 
 @Injectable()
 export class SeedService {
@@ -32,8 +32,8 @@ export class SeedService {
 
     await this.deleteDatabase();
     const user = await this.loadUsers();
+    await this.loadItems(user);
 
-    // TODO: Crear items
     return true;
   }
 
@@ -58,5 +58,15 @@ export class SeedService {
     }
 
     return users[0];
+  }
+
+  async loadItems(user: User): Promise<void> {
+    const itemsPromises = [];
+
+    for (const item of SEED_ITEMS) {
+      itemsPromises.push(this.itemService.create(item, user));
+    }
+
+    await Promise.all(itemsPromises);
   }
 }
