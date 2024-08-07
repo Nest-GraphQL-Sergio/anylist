@@ -8,7 +8,7 @@ import {
 import { CreateItemInput, UpdateItemInput } from './dto/inputs';
 import { Item } from './entities/item.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { User } from '../users/entities/user.entity';
 import { PaginationArgs, SearchArgs } from '../common/dto/args';
 
@@ -32,12 +32,13 @@ export class ItemsService {
     searchArgs: SearchArgs,
   ): Promise<Item[]> {
     const { limit, offset } = paginationArgs;
+    const { search } = searchArgs;
 
-    return this.itemsRepository.find({
-      take: limit,
-      skip: offset,
-      where: { user: { id: idUser } },
-    });
+    // return this.itemsRepository.find({
+    //   take: limit,
+    //   skip: offset,
+    //   where: { user: { id: idUser }, name: Like(`%${search}%`) },
+    // });
   }
 
   async findOne(id: string, user: User): Promise<Item> {
