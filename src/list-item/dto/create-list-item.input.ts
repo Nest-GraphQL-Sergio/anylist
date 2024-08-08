@@ -17,7 +17,7 @@ export class CreateListItemInput {
   
   @Field(()=> ID)
   @IsUUID()
-  listtId: string;
+  listId: string;
   
   @Field(()=> ID)
   @IsUUID()

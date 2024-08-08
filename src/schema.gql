@@ -6,6 +6,7 @@ type ListItem {
   id: ID!
   quantity: Float!
   completed: Boolean!
+  list: List!
   item: Item!
 }
 
@@ -13,7 +14,8 @@ type List {
   id: ID!
   name: String!
   user: User!
-  listItem: [ListItem!]!
+  items(offset: Int = 0, limit: Int = 10, search: String): [ListItem!]!
+  totalItems: Float!
 }
 
 type User {
@@ -49,8 +51,8 @@ type Query {
   user(id: ID!): User!
   lists(offset: Int = 0, limit: Int = 10, search: String): [List!]!
   list(id: ID!): List!
+  listItem(id: ID!): ListItem!
   revalidate: AuthResponse!
-  listItem: [ListItem!]!
 }
 
 enum ValidRoles {
@@ -68,10 +70,11 @@ type Mutation {
   createList(createListInput: CreateListInput!): List!
   updateList(updateListInput: UpdateListInput!): List!
   removeList(id: ID!): List!
+  createListItem(createListItemInput: CreateListItemInput!): ListItem!
+  updateListItem(updateListItemInput: UpdateListItemInput!): ListItem!
   signup(signupInput: SignupInput!): AuthResponse!
   login(loginInput: LoginInput!): AuthResponse!
   executeSeed: Boolean!
-  createListItem(createListItemInput: CreateListItemInput!): ListItem!
 }
 
 input CreateItemInput {
@@ -103,6 +106,21 @@ input UpdateListInput {
   id: ID!
 }
 
+input CreateListItemInput {
+  quantity: Float = 0
+  completed: Boolean = false
+  listId: ID!
+  itemId: ID!
+}
+
+input UpdateListItemInput {
+  quantity: Float = 0
+  completed: Boolean = false
+  listId: ID
+  itemId: ID
+  id: ID!
+}
+
 input SignupInput {
   email: String!
   fullName: String!
@@ -112,11 +130,4 @@ input SignupInput {
 input LoginInput {
   email: String!
   password: String!
-}
-
-input CreateListItemInput {
-  quantity: Float = 0
-  completed: Boolean = false
-  listtId: ID!
-  itemId: ID!
 }
