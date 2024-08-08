@@ -16,7 +16,7 @@ export class ListItem {
   quantity: number;
 
   @Column({ type: 'boolean' })
-  @Field(() => Boolean, { defaultValue: false })
+  @Field(() => Boolean)
   completed: boolean;
 
   @ManyToOne(() => List, (list) => list.listItem, { lazy: true })
@@ -26,3 +26,5 @@ export class ListItem {
   @Field(() => Item)
   item: Item;
 }
+
+//@Unique('listItem-item', ['list','item']).
